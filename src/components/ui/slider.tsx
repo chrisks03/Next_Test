@@ -1,7 +1,9 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type SliderInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">
+
+interface SliderProps extends SliderInputProps {
   value?: number[]
   onValueChange?: (value: number[]) => void
 }
