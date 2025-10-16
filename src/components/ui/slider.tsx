@@ -15,6 +15,14 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
       onValueChange?.(newValue)
     }
 
+    // Coerce possibly string min/max props into numbers for arithmetic
+    const numericMin = typeof props.min === "number" ? props.min : props.min != null ? parseFloat(String(props.min)) : 0
+    const numericMax = typeof props.max === "number" ? props.max : props.max != null ? parseFloat(String(props.max)) : 100
+    const currentValue = typeof value?.[0] === "number" ? value[0] : parseFloat(String(value?.[0] ?? 0))
+    const clampedValue = Math.min(Math.max(currentValue, numericMin), numericMax)
+    const range = numericMax - numericMin || 1
+    const percent = ((clampedValue - numericMin) / range) * 100
+
     return (
       <input
         type="range"
@@ -26,7 +34,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
           className
         )}
         style={{
-          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((value[0] - (props.min || 0)) / ((props.max || 100) - (props.min || 0))) * 100}%, hsl(var(--secondary)) ${((value[0] - (props.min || 0)) / ((props.max || 100) - (props.min || 0))) * 100}%, hsl(var(--secondary)) 100%)`
+          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${percent}%, hsl(var(--secondary)) ${percent}%, hsl(var(--secondary)) 100%)`
         }}
         {...props}
       />
