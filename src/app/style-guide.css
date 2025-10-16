@@ -1,0 +1,100 @@
+/* Master Style Guide - edit directly */
+
+/* Base */
+body {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  line-height: 1.5;
+}
+
+/* Headings */
+h1 {
+  font-family: "Times New Roman", serif;
+  font-style: normal;
+  font-weight: 500;
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-family: "Times New Roman", serif;
+  font-style: normal;
+  font-weight: 500;
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 1.5rem;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+h2 a {
+  color: rgba(250, 250, 250, 0.7);
+  text-decoration: none;
+}
+
+h2 a:hover {
+  color: #080808;
+}
+
+h3 {
+  font-family: "Times New Roman", serif;
+  font-style: normal;
+  font-weight: 500;
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 2rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+h4, h5, h6 {
+  font-family: "Times New Roman", serif;
+  font-style: normal;
+  font-weight: 500;
+  margin: 0;
+  color: hsl(var(--foreground));
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+/* Text */
+p {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+small, .caption {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+a:hover {
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+/* Colors (optional hard overrides) */
+/* Uncomment and edit to force specific colors instead of theme tokens */
+/*
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+}
+*/
+
+
