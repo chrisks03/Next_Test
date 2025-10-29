@@ -28,7 +28,7 @@ const ASPECT_RATIOS = {
 }
 
 export default function Home() {
-  const { text, params, updateText, updateParams, resetParams } = useDotFilter('Hello World')
+  const { text, params, updateText, updateParams, resetParams } = useDotFilter('Mycelium')
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
   const [selectedRatio, setSelectedRatio] = useState<'1:1' | '16:9' | '9:16' | 'Custom'>('16:9')
   const { isPlaying, durationMs, progress, play, pause, stop, setDurationMs, setScrub } = useAnimation(5000)
@@ -43,8 +43,8 @@ export default function Home() {
   }, [easingName])
 
   // Animation start/end values for numeric params
-  const [animStart, setAnimStart] = useState({ density: 0.6, size: 4, spacing: 15, color: '#3B82F6' })
-  const [animEnd, setAnimEnd] = useState({ density: 1.0, size: 10, spacing: 30, color: '#EF4444' })
+  const [animStart, setAnimStart] = useState({ density: 0.6, size: 4, spacing: 15, color: '#035408' })
+  const [animEnd, setAnimEnd] = useState({ density: 1.0, size: 10, spacing: 30, color: '#5c3600' })
 
   const handleAspectRatioChange = (ratio: '1:1' | '16:9' | '9:16' | 'Custom') => {
     setSelectedRatio(ratio)
@@ -126,10 +126,10 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background flex-col md:flex-row">
       {/* Sidebar */}
       {sidebarVisible && (
-        <div className="w-80 border-r p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
+        <div className="order-2 md:order-1 w-full md:w-80 min-w-[320px] shrink-0 p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
         
         {/* Text Input Card */}
         <Card>
@@ -283,8 +283,13 @@ export default function Home() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2 flex-wrap">
-              <Button size="sm" onClick={isPlaying ? pause : play}>{isPlaying ? 'Pause' : 'Play'}</Button>
-              <Button size="sm" variant="outline" onClick={stop}>Stop</Button>
+              <Button
+                size="sm"
+                variant={isPlaying ? 'default' : 'outline'}
+                onClick={isPlaying ? pause : play}
+              >
+                {isPlaying ? 'Pause' : 'Play'}
+              </Button>
               <div className="flex items-center gap-2 ml-auto">
                 <Label htmlFor="duration">Duration (ms)</Label>
                 <Input id="duration" type="number" value={durationMs} onChange={(e) => setDurationMs(Math.max(500, parseInt(e.target.value) || 1000))} className="w-28" />
@@ -333,7 +338,7 @@ export default function Home() {
       )}
 
       {/* Canvas Area */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-muted/20">
+      <div className="order-1 md:order-2 flex-1 flex items-center justify-center p-6 bg-muted/20">
         <div className="relative border-2 border-border rounded-lg overflow-hidden shadow-lg">
           <P5Wrapper 
             text={text}
@@ -352,6 +357,12 @@ export default function Home() {
         </Button>
         <Button size="sm" variant="outline" onClick={handleExportGIF}>
           <Download className="w-4 h-4 mr-2" /> GIF
+        </Button>
+      </div>
+      {/* Viewport-floating UI visibility toggle */}
+      <div className="fixed top-4 left-4 z-50">
+        <Button size="sm" variant="outline" onClick={() => setSidebarVisible(v => !v)}>
+          Hide (H)
         </Button>
       </div>
     </div>
