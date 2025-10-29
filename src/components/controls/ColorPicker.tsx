@@ -24,7 +24,7 @@ export default function ColorPicker({ label, value, onChange }: ColorPickerProps
           type="color"
           value={value}
           onChange={handleColorChange}
-          className="w-10 h-10 border border-input rounded-md cursor-pointer bg-background"
+          className="w-10 h-10 border border-input rounded-md cursor-pointer bg-transparent"
         />
         <Input
           type="text"

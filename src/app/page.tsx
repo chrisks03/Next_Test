@@ -116,10 +116,10 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-80 bg-card border-r p-6 flex flex-col overflow-y-auto space-y-6">
+      <div className="w-80 border-r p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
         
         {/* Text Input Card */}
-        <Card>
+        <Card className="bg-transparent shadow-none border-0">
           <CardHeader>
             <CardTitle className="font-medium">Text Input</CardTitle>
           </CardHeader>
@@ -138,7 +138,7 @@ export default function Home() {
         </Card>
 
         {/* Aspect Ratio Card */}
-        <Card>
+        <Card className="bg-transparent shadow-none border-0">
           <CardHeader>
             <CardTitle className="font-medium">Aspect Ratio</CardTitle>
           </CardHeader>
@@ -181,7 +181,7 @@ export default function Home() {
         </Card>
 
         {/* Canvas Size Card */}
-        <Card>
+        <Card className="bg-transparent shadow-none border-0">
           <CardHeader>
             <CardTitle className="font-medium">Canvas Size</CardTitle>
           </CardHeader>
@@ -210,7 +210,7 @@ export default function Home() {
         </Card>
 
         {/* Dot Filter Controls Card */}
-        <Card>
+        <Card className="bg-transparent shadow-none border-0">
           <CardHeader>
             <CardTitle className="font-medium">Dot Filter</CardTitle>
           </CardHeader>
