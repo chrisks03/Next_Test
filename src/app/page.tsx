@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo, useState, useRef } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { useDotFilter } from '@/hooks/useDotFilter'
 import { useAnimation } from '@/hooks/useAnimation'
 import { interpolateParams, interpolateColor, linear, easeInOutCubic, easeInQuad, easeOutQuad } from '@/lib/animation/interpolation'
@@ -113,13 +113,26 @@ export default function Home() {
     URL.revokeObjectURL(url)
   }
 
+  const [sidebarVisible, setSidebarVisible] = useState(true)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'h') {
+        setSidebarVisible(v => !v)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-80 border-r p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
+      {sidebarVisible && (
+        <div className="w-80 border-r p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
         
         {/* Text Input Card */}
-        <Card className="bg-transparent shadow-none border-0">
+        <Card>
           <CardHeader>
             <CardTitle className="font-medium">Text Input</CardTitle>
           </CardHeader>
@@ -138,7 +151,7 @@ export default function Home() {
         </Card>
 
         {/* Aspect Ratio Card */}
-        <Card className="bg-transparent shadow-none border-0">
+        <Card>
           <CardHeader>
             <CardTitle className="font-medium">Aspect Ratio</CardTitle>
           </CardHeader>
@@ -181,7 +194,7 @@ export default function Home() {
         </Card>
 
         {/* Canvas Size Card */}
-        <Card className="bg-transparent shadow-none border-0">
+        <Card>
           <CardHeader>
             <CardTitle className="font-medium">Canvas Size</CardTitle>
           </CardHeader>
@@ -210,7 +223,7 @@ export default function Home() {
         </Card>
 
         {/* Dot Filter Controls Card */}
-        <Card className="bg-transparent shadow-none border-0">
+        <Card>
           <CardHeader>
             <CardTitle className="font-medium">Dot Filter</CardTitle>
           </CardHeader>
@@ -316,7 +329,8 @@ export default function Home() {
         </Card>
 
         {/* Export Controls moved to floating overlay */}
-      </div>
+        </div>
+      )}
 
       {/* Canvas Area */}
       <div className="flex-1 flex items-center justify-center p-6 bg-muted/20">
