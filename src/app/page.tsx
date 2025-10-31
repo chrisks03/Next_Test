@@ -178,15 +178,7 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="font-medium">Input</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <Input
-              id="text-input"
-              type="text"
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Enter text..."
-              className="w-full focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
+          <CardContent>
             <input id="image-upload" className="hidden" type="file" accept="image/*" onChange={(e) => {
               const file = e.target.files?.[0]
               if (!file) return
@@ -197,13 +189,21 @@ export default function Home() {
               }
               img.src = url
             }} />
-            <Label htmlFor="image-upload" className="w-full">
+            <Input
+              id="text-input"
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Enter text..."
+              className="w-full mb-2 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+            <Label htmlFor="image-upload" className="w-full block">
               <Button type="button" variant="outline" size="sm" className="w-full uppercase tracking-wide text-xs h-8 px-2 py-1">
                 Upload Image
               </Button>
             </Label>
             {uploadedImage && (
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-4">
                 <div className="text-xs text-muted-foreground truncate max-w-[200px]">Image loaded</div>
                 <Button size="icon" variant="ghost" onClick={() => setUploadedImage(null)} aria-label="Clear image">
                   <X className="w-4 h-4" />
@@ -419,9 +419,7 @@ export default function Home() {
         <Button size="sm" variant="default" onClick={handleExportPNG}>
           <Download className="w-4 h-4 mr-2" /> PNG
         </Button>
-        <Button size="sm" variant="outline" onClick={handleExportGIF}>
-          <Download className="w-4 h-4 mr-2" /> GIF
-        </Button>
+        {/* GIF export hidden per request */}
       </div>
       
     </div>
