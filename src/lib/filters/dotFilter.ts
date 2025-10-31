@@ -10,6 +10,7 @@ export interface DotFilterState {
   width: number
   height: number
   params: DotFilterParams
+  image?: HTMLImageElement | null
 }
 
 export class DotFilter {
@@ -26,19 +27,27 @@ export class DotFilter {
   }
 
   render() {
-    const { text, width, height, params } = this.state
+    const { text, width, height, params, image } = this.state
     const { density, size, spacing, color } = params
 
     // Clear canvas
     this.p5.background(255)
 
-    // Create a graphics buffer to render text (exactly like the sketch)
-    const textGraphics = this.p5.createGraphics(width, height)
-    textGraphics.textSize(64) // Make text bigger for more pixels to hit
-    textGraphics.fill(255) // White text
-    textGraphics.background(0) // Black background
-    textGraphics.textAlign(this.p5.CENTER, this.p5.CENTER)
-    textGraphics.text(text, 0, 0, width, height)
+    // Create a graphics buffer as sampling source
+    const srcGraphics = this.p5.createGraphics(width, height)
+    srcGraphics.background(0)
+
+    if (image) {
+      // Draw image scaled to canvas; use alpha channel for sampling
+      srcGraphics.image(image, 0, 0, width, height)
+    } else {
+      // Draw text; use white on black then sample brightness == 255
+      srcGraphics.textSize(64)
+      srcGraphics.fill(255)
+      srcGraphics.background(0)
+      srcGraphics.textAlign(this.p5.CENTER, this.p5.CENTER)
+      srcGraphics.text(text, 0, 0, width, height)
+    }
 
     // Don't draw the graphics buffer - we only want the dots
     // this.p5.image(textGraphics, 0, 0)
@@ -60,10 +69,10 @@ export class DotFilter {
       attempts++
       
       // Sample the pixel at this position (exactly like the sketch)
-      const pixel = textGraphics.get(x, y)
-      
-      // Check if this pixel is white (text pixel) - exactly like the sketch
-      if (pixel[0] === 255) {
+      const pixel = srcGraphics.get(x, y) // [r,g,b,a]
+      const alpha = pixel[3]
+      const isOn = image ? (alpha > 10) : (pixel[0] === 255)
+      if (isOn) {
         // Use the color from params instead of random colors
         this.p5.fill(color)
         

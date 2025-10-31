@@ -8,6 +8,7 @@ interface P5WrapperProps {
   width: number
   height: number
   params: DotFilterParams
+  image?: HTMLImageElement | null
   onReady?: (handle: P5WrapperHandle) => void
 }
 
@@ -17,7 +18,7 @@ export type P5WrapperHandle = {
   renderWithParams: (newParams: DotFilterParams) => void
 }
 
-function P5WrapperInner({ text, width, height, params, onReady }: P5WrapperProps, ref: React.Ref<P5WrapperHandle>) {
+function P5WrapperInner({ text, width, height, params, image, onReady }: P5WrapperProps, ref: React.Ref<P5WrapperHandle>) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const p5InstanceRef = useRef<any>(null)
   const dotFilterRef = useRef<DotFilter | null>(null)
@@ -83,7 +84,8 @@ function P5WrapperInner({ text, width, height, params, onReady }: P5WrapperProps
           text,
           width,
           height,
-          params
+          params,
+          image
         }
         dotFilterRef.current = new DotFilter(p, state)
         
@@ -102,7 +104,7 @@ function P5WrapperInner({ text, width, height, params, onReady }: P5WrapperProps
         const candidate = (p as any)?.canvas || (p as any)?._renderer?.canvas || null
         canvasElRef.current = (candidate as HTMLCanvasElement) ?? canvasElRef.current
         if (dotFilterRef.current) {
-          dotFilterRef.current.updateState({ text, width, height, params })
+          dotFilterRef.current.updateState({ text, width, height, params, image })
           dotFilterRef.current.render()
         }
       }
@@ -115,7 +117,7 @@ function P5WrapperInner({ text, width, height, params, onReady }: P5WrapperProps
         p5InstanceRef.current.remove()
       }
     }
-  }, [p5, text, width, height, params])
+  }, [p5, text, width, height, params, image])
 
   // Update dot filter when params change with debouncing for performance
   useEffect(() => {
@@ -123,14 +125,14 @@ function P5WrapperInner({ text, width, height, params, onReady }: P5WrapperProps
       // Debounce parameter changes to reduce lag
       const timeoutId = setTimeout(() => {
         if (dotFilterRef.current) {
-          dotFilterRef.current.updateState({ text, width, height, params })
+          dotFilterRef.current.updateState({ text, width, height, params, image })
           dotFilterRef.current.render()
         }
       }, 100) // 100ms debounce
 
       return () => clearTimeout(timeoutId)
     }
-  }, [text, width, height, params])
+  }, [text, width, height, params, image])
 
   return <div ref={canvasRef} />
 }

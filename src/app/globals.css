@@ -82,3 +82,41 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* Slider styling */
+.slider {
+  height: 6px; /* slimmer track */
+  background-color: hsl(var(--secondary));
+  border-radius: 9999px;
+}
+.slider:focus {
+  outline: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: hsl(var(--card));
+  border: 2px solid hsl(var(--border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, hsl(var(--primary)) 20%, transparent);
+  /* Center the smaller thumb on the 6px track */
+  margin-top: -3px;
+}
+.slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: hsl(var(--card));
+  border: 2px solid hsl(var(--border));
+}
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+}
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: transparent; /* we set via element background gradient */
+}

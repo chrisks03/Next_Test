@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { RotateCcw, Square, Monitor, Smartphone, Download } from 'lucide-react'
+import { RotateCcw, Square, Monitor, Smartphone, Download, Image as ImageIcon, X, Upload } from 'lucide-react'
 
 // Dynamic import to avoid SSR issues with p5.js
 import type { P5WrapperHandle } from '@/components/canvas/P5Wrapper'
@@ -29,7 +29,9 @@ const ASPECT_RATIOS = {
 
 export default function Home() {
   const { text, params, updateText, updateParams, resetParams } = useDotFilter('Mycelium')
+  const [textInput, setTextInput] = useState(text)
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
+  const [uploadedImage, setUploadedImage] = useState<HTMLImageElement | null>(null)
   const [selectedRatio, setSelectedRatio] = useState<'1:1' | '16:9' | '9:16' | 'Custom'>('16:9')
   const { isPlaying, durationMs, progress, play, pause, stop, setDurationMs, setScrub } = useAnimation(5000)
   const [easingName, setEasingName] = useState<'linear' | 'easeInOutCubic' | 'easeInQuad' | 'easeOutQuad'>('easeInOutCubic')
@@ -67,6 +69,29 @@ export default function Home() {
   }, [animStart, animEnd, progress, easingFn])
 
   const canvasRef = useRef<P5WrapperHandle | null>(null)
+  const debounceTimerRef = useRef<number | null>(null)
+
+  // Keep local input in sync if source changes externally
+  useEffect(() => {
+    setTextInput(text)
+  }, [text])
+
+  // Debounce updating the source text to avoid re-rendering on each keystroke
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      window.clearTimeout(debounceTimerRef.current)
+    }
+    debounceTimerRef.current = window.setTimeout(() => {
+      if (textInput !== text) {
+        updateText(textInput)
+      }
+    }, 1000)
+    return () => {
+      if (debounceTimerRef.current) {
+        window.clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [textInput, text, updateText])
 
   const handleExportPNG = () => {
     // Ensure current visible frame is rendered before capture
@@ -114,11 +139,21 @@ export default function Home() {
   }
 
   const [sidebarVisible, setSidebarVisible] = useState(true)
+  const lastSemicolonAtRef = useRef<number | null>(null)
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      const now = Date.now()
+      if (e.key === ';') {
+        lastSemicolonAtRef.current = now
+        return
+      }
       if (e.key.toLowerCase() === 'h') {
-        setSidebarVisible(v => !v)
+        const last = lastSemicolonAtRef.current
+        if (last && now - last <= 1000) {
+          setSidebarVisible(v => !v)
+          lastSemicolonAtRef.current = null
+        }
       }
     }
     window.addEventListener('keydown', onKeyDown)
@@ -131,22 +166,50 @@ export default function Home() {
       {sidebarVisible && (
         <div className="order-2 md:order-1 w-full md:w-80 min-w-[320px] shrink-0 p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
         
-        {/* Text Input Card */}
+        {/* Hide toggle at top of controls */}
+        <div className="-mb-4">
+          <Button size="sm" variant="outline" className="uppercase tracking-wide text-xs h-8 px-2 py-1" onClick={() => setSidebarVisible(v => !v)}>
+            HIDE (;H)
+          </Button>
+        </div>
+
+        {/* Input (text + upload) combined Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-medium">Text Input</CardTitle>
+            <CardTitle className="font-medium">Input</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="text-input">Enter your text</Label>
-              <Input
-                id="text-input"
-                type="text"
-                value={text}
-                onChange={(e) => updateText(e.target.value)}
-                placeholder="Enter text..."
-              />
-            </div>
+          <CardContent className="space-y-6">
+            <Input
+              id="text-input"
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Enter text..."
+              className="w-full focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+            <input id="image-upload" className="hidden" type="file" accept="image/*" onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (!file) return
+              const url = URL.createObjectURL(file)
+              const img = new Image()
+              img.onload = () => {
+                setUploadedImage(img)
+              }
+              img.src = url
+            }} />
+            <Label htmlFor="image-upload" className="w-full">
+              <Button type="button" variant="outline" size="sm" className="w-full uppercase tracking-wide text-xs h-8 px-2 py-1">
+                Upload Image
+              </Button>
+            </Label>
+            {uploadedImage && (
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground truncate max-w-[200px]">Image loaded</div>
+                <Button size="icon" variant="ghost" onClick={() => setUploadedImage(null)} aria-label="Clear image">
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -282,7 +345,7 @@ export default function Home() {
             <CardTitle className="font-medium">Animation</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-end gap-2 flex-wrap">
               <Button
                 size="sm"
                 variant={isPlaying ? 'default' : 'outline'}
@@ -290,16 +353,16 @@ export default function Home() {
               >
                 {isPlaying ? 'Pause' : 'Play'}
               </Button>
-              <div className="flex items-center gap-2 ml-auto">
-                <Label htmlFor="duration">Duration (ms)</Label>
-                <Input id="duration" type="number" value={durationMs} onChange={(e) => setDurationMs(Math.max(500, parseInt(e.target.value) || 1000))} className="w-28" />
+              <div className="flex flex-col items-start gap-1">
+                <Label htmlFor="duration">Duration</Label>
+                <Input id="duration" type="number" value={durationMs} onChange={(e) => setDurationMs(Math.max(500, parseInt(e.target.value) || 1000))} className="w-32" />
               </div>
             </div>
 
             {/* Easing selection */}
             <div className="flex items-center gap-2 flex-wrap">
               <Label htmlFor="easing">Easing</Label>
-              <select id="easing" className="border border-input rounded px-2 py-1 text-sm" value={easingName} onChange={(e) => setEasingName(e.target.value as any)}>
+              <select id="easing" className="border border-input bg-card text-foreground rounded px-2 py-1 text-sm" value={easingName} onChange={(e) => setEasingName(e.target.value as any)}>
                 <option value="linear">Linear</option>
                 <option value="easeInOutCubic">Ease In Out Cubic</option>
                 <option value="easeInQuad">Ease In Quad</option>
@@ -338,13 +401,14 @@ export default function Home() {
       )}
 
       {/* Canvas Area */}
-      <div className="order-1 md:order-2 flex-1 flex items-center justify-center p-6 bg-muted/20">
-        <div className="relative border-2 border-border rounded-lg overflow-hidden shadow-lg">
+      <div className="order-1 md:order-2 flex-1 min-w-0 min-h-0 flex items-center justify-center p-6">
+        <div className="relative border-2 border-border rounded-lg overflow-auto shadow-lg max-w-full max-h-[calc(100vh-96px)] w-fit h-fit">
           <P5Wrapper 
             text={text}
             width={canvasSize.width}
             height={canvasSize.height}
             params={isPlaying ? animatedParams : params}
+            image={uploadedImage}
             ref={canvasRef as any}
             onReady={(h) => { canvasRef.current = h }}
           />
@@ -359,12 +423,7 @@ export default function Home() {
           <Download className="w-4 h-4 mr-2" /> GIF
         </Button>
       </div>
-      {/* Viewport-floating UI visibility toggle */}
-      <div className="fixed top-4 left-4 z-50">
-        <Button size="sm" variant="outline" onClick={() => setSidebarVisible(v => !v)}>
-          Hide (H)
-        </Button>
-      </div>
+      
     </div>
   )
 }
