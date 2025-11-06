@@ -164,7 +164,7 @@ export default function Home() {
     <div className="flex h-screen bg-background flex-col md:flex-row">
       {/* Sidebar */}
       {sidebarVisible && (
-        <div className="order-2 md:order-1 w-full md:w-80 min-w-[320px] shrink-0 p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
+        <div className="order-1 md:order-1 w-full md:w-80 min-w-[320px] shrink-0 p-6 flex flex-col overflow-y-auto no-scrollbar space-y-6 bg-transparent">
         
         {/* Hide toggle at top of controls */}
         <div className="-mb-4">
@@ -401,7 +401,7 @@ export default function Home() {
       )}
 
       {/* Canvas Area */}
-      <div className="order-1 md:order-2 flex-1 min-w-0 min-h-0 flex items-center justify-center p-6">
+      <div className="order-2 md:order-2 flex-1 min-w-0 min-h-0 flex items-center justify-center p-6">
         <div className="relative border-2 border-border rounded-lg overflow-auto shadow-lg max-w-full max-h-[calc(100vh-96px)] w-fit h-fit">
           <P5Wrapper 
             text={text}
